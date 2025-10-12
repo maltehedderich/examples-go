@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"io"
 	"net/http"
 	"os"
 )
@@ -12,19 +12,22 @@ func main() {
 		println("Error:", err)
 		os.Exit(1)
 	}
-	// The Read interface (io.Reader) is a fundamental interface in Go that defines
+
+	// The Reader interface (io.Reader) is a fundamental interface in Go that defines
 	// how data is read from a source. It has a single method:
 	//   Read(p []byte) (n int, err error)
 	//
 	// How it works:
-	// - We pass in a byte slice (p) that acts as a container
-	// - Read fills this slice with data from the source (up to len(p) bytes)
+	// - Read takes a byte slice (p) as input and fills it with data from the source
 	// - It returns the number of bytes read (n) and any error encountered
+	// - When there's no more data, it returns io.EOF error
 	//
-	// Here, resp.Body implements the Reader interface, allowing us to read
-	// the HTTP response body data into our byte slice (bs)
-	bs := make([]byte, 99999)
-	resp.Body.Read(bs)
-
-	fmt.Println(string(bs))
+	// In this code:
+	// - resp.Body implements the Reader interface (it's an io.ReadCloser)
+	// - os.Stdout implements the Writer interface (io.Writer)
+	// - io.Copy uses the Read interface internally: it repeatedly calls Read on
+	//   resp.Body to get chunks of data, then writes them to os.Stdout
+	// - This pattern allows us to stream data efficiently without loading everything
+	//   into memory at once
+	io.Copy(os.Stdout, resp.Body)
 }
