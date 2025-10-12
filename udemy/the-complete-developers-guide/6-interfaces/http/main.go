@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 )
+
+type logWriter struct{}
 
 func main() {
 	resp, err := http.Get("http://google.com")
@@ -12,6 +15,8 @@ func main() {
 		println("Error:", err)
 		os.Exit(1)
 	}
+
+	lw := logWriter{}
 
 	// The Reader interface (io.Reader) is a fundamental interface in Go that defines
 	// how data is read from a source. It has a single method:
@@ -24,10 +29,16 @@ func main() {
 	//
 	// In this code:
 	// - resp.Body implements the Reader interface (it's an io.ReadCloser)
-	// - os.Stdout implements the Writer interface (io.Writer)
+	// - logWriter implements the Writer interface
 	// - io.Copy uses the Read interface internally: it repeatedly calls Read on
 	//   resp.Body to get chunks of data, then writes them to os.Stdout
 	// - This pattern allows us to stream data efficiently without loading everything
 	//   into memory at once
-	io.Copy(os.Stdout, resp.Body)
+	io.Copy(lw, resp.Body)
+}
+
+func (logWriter) Write(bs []byte) (int, error) {
+	fmt.Println(string(bs))
+	fmt.Println("Just wrote this many bytes:", len(bs))
+	return len(bs), nil
 }
