@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"myapp/config"
 	"os"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -11,8 +12,8 @@ import (
 )
 
 const (
-	dialect  = "pgx"
-	dbString = "host=localhost user=myapp_user password=myapp_pass dbname=myapp_db port=5432 sslmode=disable"
+	dialect     = "pgx"
+	fmtDBString = "host=%s user=%s password=%s dbname=%s port=%d sslmode=disable"
 )
 
 var (
@@ -31,6 +32,9 @@ func main() {
 	}
 
 	command := args[0]
+
+	c := config.New()
+	dbString := fmt.Sprintf(fmtDBString, c.DB.Host, c.DB.Username, c.DB.Password, c.DB.DBName, c.DB.Port)
 
 	db, err := goose.OpenDBWithDriver(dialect, dbString)
 	if err != nil {

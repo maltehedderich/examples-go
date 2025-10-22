@@ -3,20 +3,22 @@ package main
 import (
 	"io"
 	"log"
+	"myapp/config"
 	"net/http"
-	"time"
 )
 
 func main() {
+	c := config.New()
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/hello", hello)
 
 	s := &http.Server{
 		Addr:         ":8080",
 		Handler:      mux,
-		ReadTimeout:  2 * time.Second,
-		WriteTimeout: 2 * time.Second,
-		IdleTimeout:  5 * time.Second,
+		ReadTimeout:  c.Server.TimeoutRead,
+		WriteTimeout: c.Server.TimeoutWrite,
+		IdleTimeout:  c.Server.TimeoutIdle,
 	}
 
 	log.Println("Starting server :8080")
