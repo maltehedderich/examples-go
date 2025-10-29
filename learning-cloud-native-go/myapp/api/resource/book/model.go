@@ -37,3 +37,36 @@ type Form struct {
 	ImageUrl      string `json:"image_url"`
 	Description   string `json:"description"`
 }
+
+func (f *Form) ToModel() *Book {
+	pubDate, _ := time.Parse("2006-01-02", f.PublishedDate)
+
+	return &Book{
+		Title:         f.Title,
+		Author:        f.Author,
+		PublishedDate: pubDate,
+		ImageURL:      f.ImageUrl,
+		Description:   f.Description,
+	}
+}
+
+func (b *Book) ToDto() *DTO {
+	return &DTO{
+		ID:            b.ID.String(),
+		Title:         b.Title,
+		Author:        b.Author,
+		PublishedDate: b.PublishedDate.Format("2006-01-02"),
+		ImageUrl:      b.ImageURL,
+		Description:   b.Description,
+	}
+}
+
+func (bs Books) ToDto() []*DTO {
+	dtos := make([]*DTO, len(bs))
+
+	for i, v := range bs {
+		dtos[i] = v.ToDto()
+	}
+
+	return dtos
+}
