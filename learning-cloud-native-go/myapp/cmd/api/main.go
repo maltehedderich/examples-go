@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"myapp/cmd/api/router"
+	"myapp/api/router"
 	"myapp/config"
 	"net/http"
 )

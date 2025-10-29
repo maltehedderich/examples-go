@@ -1,8 +1,8 @@
 package router
 
 import (
-	"myapp/cmd/api/resource/book"
-	"myapp/cmd/api/resource/health"
+	"myapp/api/resource/book"
+	"myapp/api/resource/health"
 
 	"github.com/go-chi/chi/v5"
 )
